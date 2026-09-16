@@ -1,0 +1,15 @@
+info:
+  name: 05 - Excluir Tenis
+  type: http
+  seq: 12
+
+http:
+  method: DELETE
+  url: http://localhost:5050/api/tenis/3
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -5,7 +5,15 @@ info:
 
 http:
   method: PUT
-  url: http://localhost:5050/api/tenis/3
+  url: http://localhost:5050/api/tenis/1
+  body:
+    type: json
+    data: |-
+      {
+        "nome": "Nike Air Max 90 Special Edition",
+        "marca": "Nike",
+        "preco": 699.90
+      }
   auth: inherit
 
 settings:

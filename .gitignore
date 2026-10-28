@@ -11,3 +11,11 @@ Thumbs.db
 # .NET
 bin/
 obj/
+
+# SQLite databases & temp files
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+tenis.db

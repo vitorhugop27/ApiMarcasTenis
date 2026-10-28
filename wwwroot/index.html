@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Loja de Tênis - SneakerStore (AP2)</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Cabeçalho -->
+  <header class="header">
+    <div class="header-container">
+      <div class="logo-area">
+        <span class="logo-icon" aria-hidden="true">👟</span>
+        <h1>SneakerStore <span class="badge-demo">Loja Oficial</span></h1>
+      </div>
+      <p class="header-subtitle">Gerenciamento completo de marcas e modelos de tênis integrado à API ASP.NET Core e SQLite.</p>
+    </div>
+  </header>
+
+  <!-- Área de Notificações / Status (Acessível) -->
+  <div id="feedback-container" class="feedback-container" role="status" aria-live="polite"></div>
+
+  <main class="main-layout">
+    <!-- Seção do Formulário (Adicionar / Editar) -->
+    <section class="card form-section" aria-labelledby="form-heading">
+      <div class="section-header">
+        <h2 id="form-heading">Cadastrar Novo Tênis</h2>
+        <span id="form-mode-badge" class="badge-status">Novo Registro</span>
+      </div>
+
+      <form id="tenis-form" novalidate>
+        <input type="hidden" id="tenis-id" name="id" value="">
+
+        <div class="form-group">
+          <label for="tenis-nome">Nome do Tênis <span class="required" aria-hidden="true">*</span></label>
+          <input 
+            type="text" 
+            id="tenis-nome" 
+            name="nome" 
+            placeholder="Ex: Nike Air Max 90" 
+            required
+            autocomplete="off"
+            aria-describedby="nome-help">
+          <small id="nome-help" class="field-hint">Informe o nome ou modelo comercial do tênis.</small>
+          <div id="nome-error" class="field-error" aria-live="polite"></div>
+        </div>
+
+        <div class="form-group">
+          <label for="tenis-marca">Marca <span class="required" aria-hidden="true">*</span></label>
+          <input 
+            type="text" 
+            id="tenis-marca" 
+            name="marca" 
+            placeholder="Ex: Nike, Adidas, Puma..." 
+            required
+            list="marcas-sugestoes"
+            autocomplete="off"
+            aria-describedby="marca-help">
+          <datalist id="marcas-sugestoes">
+            <option value="Nike">
+            <option value="Adidas">
+            <option value="Puma">
+            <option value="Asics">
+            <option value="New Balance">
+            <option value="Mizuno">
+            <option value="Vans">
+            <option value="Converse">
+            <option value="Jordan">
+          </datalist>
+          <small id="marca-help" class="field-hint">Selecione ou digite a marca fabricante.</small>
+          <div id="marca-error" class="field-error" aria-live="polite"></div>
+        </div>
+
+        <div class="form-group">
+          <label for="tenis-preco">Preço em Reais (R$) <span class="required" aria-hidden="true">*</span></label>
+          <input 
+            type="number" 
+            id="tenis-preco" 
+            name="preco" 
+            placeholder="Ex: 599.90" 
+            step="0.01" 
+            min="0.01" 
+            required
+            aria-describedby="preco-help">
+          <small id="preco-help" class="field-hint">Digite o valor numérico (ex: 599.90).</small>
+          <div id="preco-error" class="field-error" aria-live="polite"></div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" id="btn-submit" class="btn btn-primary">
+            <span id="btn-submit-icon" aria-hidden="true">➕</span>
+            <span id="btn-submit-text">Adicionar Tênis</span>
+          </button>
+          <button type="button" id="btn-cancel" class="btn btn-secondary hidden">
+            <span>Cancelar Edição</span>
+          </button>
+          <button type="button" id="btn-reset" class="btn btn-tertiary">
+            <span>Limpar Campos</span>
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Seção de Listagem -->
+    <section class="card list-section" aria-labelledby="list-heading">
+      <div class="section-header list-header">
+        <div>
+          <h2 id="list-heading">Catálogo de Tênis</h2>
+          <p class="section-subtitle">Exibindo registros sincronizados com a API e banco de dados SQLite.</p>
+        </div>
+        <div class="list-controls">
+          <div class="search-box">
+            <label for="search-input" class="sr-only">Filtrar por nome ou marca</label>
+            <input 
+              type="search" 
+              id="search-input" 
+              placeholder="Buscar por nome ou marca..." 
+              autocomplete="off">
+          </div>
+          <button type="button" id="btn-restore-data" class="btn btn-outline" title="Recarrega a listagem diretamente da API">
+            <span>Atualizar Lista</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="summary-bar">
+        <span id="total-itens" class="summary-count">Carregando itens...</span>
+        <span class="badge-source">Origem: SQLite / API</span>
+      </div>
+
+      <!-- Container dinâmico dos itens -->
+      <div id="tenis-grid" class="tenis-grid" role="region" aria-live="polite">
+        <!-- Itens carregados via fetch() da API -->
+      </div>
+
+      <!-- Mensagem de lista vazia -->
+      <div id="empty-state" class="empty-state hidden">
+        <div class="empty-icon" aria-hidden="true">📦</div>
+        <h3>Nenhum tênis cadastrado</h3>
+        <p>Utilize o formulário ao lado para cadastrar o primeiro tênis no banco de dados.</p>
+        <button type="button" id="btn-empty-focus" class="btn btn-primary">Cadastrar Tênis Agora</button>
+      </div>
+    </section>
+  </main>
+
+  <!-- Modal de Visualização de Detalhes -->
+  <div id="detail-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="modal-title">Detalhes do Tênis</h3>
+        <button type="button" id="btn-modal-close" class="btn-close" aria-label="Fechar detalhes">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="detail-badge-row">
+          <span id="detail-id-badge" class="badge-id">ID: #</span>
+          <span class="badge-demo-pill">Banco de Dados</span>
+        </div>
+        <dl class="detail-list">
+          <div class="detail-item">
+            <dt>Nome do Modelo:</dt>
+            <dd id="detail-nome">-</dd>
+          </div>
+          <div class="detail-item">
+            <dt>Marca Fabricante:</dt>
+            <dd id="detail-marca">-</dd>
+          </div>
+          <div class="detail-item">
+            <dt>Preço Unitário:</dt>
+            <dd id="detail-preco" class="detail-preco">-</dd>
+          </div>
+          <div class="detail-item">
+            <dt>Status no Sistema:</dt>
+            <dd><span class="status-indicator">●</span> Ativo no Banco de Dados</dd>
+          </div>
+        </dl>
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="btn-modal-edit" class="btn btn-primary">Editar Este Tênis</button>
+        <button type="button" id="btn-modal-dismiss" class="btn btn-secondary">Fechar</button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-container">
+      <p>Loja de Tênis — Sistema de Cadastro e Gestão (AP2).</p>
+      <p><small>ASP.NET Core Minimal API, Entity Framework Core e SQLite com frontend Vanilla integrado.</small></p>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

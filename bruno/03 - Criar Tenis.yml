@@ -4,8 +4,16 @@ info:
   seq: 8
 
 http:
-  method: GET
+  method: POST
   url: http://localhost:5050/api/tenis
+  body:
+    type: json
+    data: |-
+      {
+        "nome": "Nike Air Max 90",
+        "marca": "Nike",
+        "preco": 599.90
+      }
   auth: inherit
 
 settings:

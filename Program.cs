@@ -1,23 +1,47 @@
+using Microsoft.EntityFrameworkCore;
+using ApiMarcasTenis.Data;
+using ApiMarcasTenis.Models;
+
 var builder = WebApplication.CreateBuilder(args);
+
+// Configuração do Entity Framework Core com SQLite
+builder.Services.AddDbContext<TenisDbContext>(options =>
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection") ?? "Data Source=tenis.db"));
+
 var app = builder.Build();
 
-var tenis = new List<Tenis>
+// Aplica migrações pendentes e insere dados iniciais caso o banco esteja vazio
+using (var scope = app.Services.CreateScope())
 {
-    new Tenis(1, "Nike Air Max", "Nike", 599.90),
-    new Tenis(2, "Ultraboost", "Adidas", 799.90)
-};
+    var db = scope.ServiceProvider.GetRequiredService<TenisDbContext>();
+    db.Database.Migrate();
+    if (!db.Tenis.Any())
+    {
+        db.Tenis.AddRange(
+            new Tenis { Nome = "Nike Air Max", Marca = "Nike", Preco = 599.90 },
+            new Tenis { Nome = "Ultraboost", Marca = "Adidas", Preco = 799.90 }
+        );
+        db.SaveChanges();
+    }
+}
 
-app.MapGet("/", () => "API Marcas de Tenis funcionando!");
+// Configuração para servir arquivos estáticos de wwwroot (index.html, style.css, app.js)
+app.UseDefaultFiles();
+app.UseStaticFiles();
 
-app.MapGet("/api/tenis", () =>
+// Rotas da API RESTful com acesso ao banco de dados SQLite
+app.MapGet("/api/tenis", async (TenisDbContext db) =>
 {
-    var lista = tenis.Select(t => new TenisDto(t.Id, t.Nome, t.Marca, t.Preco)).ToList();
+    var lista = await db.Tenis
+        .Select(t => new TenisDto(t.Id, t.Nome, t.Marca, t.Preco))
+        .ToListAsync();
+
     return Results.Ok(lista);
 });
 
-app.MapGet("/api/tenis/{id}", (int id) =>
+app.MapGet("/api/tenis/{id:int}", async (int id, TenisDbContext db) =>
 {
-    var item = tenis.FirstOrDefault(t => t.Id == id);
+    var item = await db.Tenis.FindAsync(id);
 
     if (item == null)
         return Results.NotFound();
@@ -25,45 +49,48 @@ app.MapGet("/api/tenis/{id}", (int id) =>
     return Results.Ok(new TenisDto(item.Id, item.Nome, item.Marca, item.Preco));
 });
 
-app.MapPost("/api/tenis", (TenisInputDto entrada) =>
+app.MapPost("/api/tenis", async (TenisInputDto entrada, TenisDbContext db) =>
 {
-    var novoId = tenis.Count == 0 ? 1 : tenis.Max(t => t.Id) + 1;
+    var novoTenis = new Tenis
+    {
+        Nome = entrada.Nome,
+        Marca = entrada.Marca,
+        Preco = entrada.Preco
+    };
 
-    var novoTenis = new Tenis(novoId, entrada.Nome, entrada.Marca, entrada.Preco);
+    db.Tenis.Add(novoTenis);
+    await db.SaveChangesAsync();
 
-    tenis.Add(novoTenis);
-
-    return Results.Created($"/api/tenis/{novoId}", new TenisDto(novoTenis.Id, novoTenis.Nome, novoTenis.Marca, novoTenis.Preco));
+    return Results.Created($"/api/tenis/{novoTenis.Id}", new TenisDto(novoTenis.Id, novoTenis.Nome, novoTenis.Marca, novoTenis.Preco));
 });
 
-app.MapPut("/api/tenis/{id}", (int id, TenisInputDto entrada) =>
+app.MapPut("/api/tenis/{id:int}", async (int id, TenisInputDto entrada, TenisDbContext db) =>
 {
-    var item = tenis.FirstOrDefault(t => t.Id == id);
+    var item = await db.Tenis.FindAsync(id);
 
     if (item == null)
         return Results.NotFound();
 
-    var novoTenis = new Tenis(id, entrada.Nome, entrada.Marca, entrada.Preco);
+    item.Nome = entrada.Nome;
+    item.Marca = entrada.Marca;
+    item.Preco = entrada.Preco;
 
-    tenis[tenis.IndexOf(item)] = novoTenis;
+    await db.SaveChangesAsync();
 
-    return Results.Ok(new TenisDto(novoTenis.Id, novoTenis.Nome, novoTenis.Marca, novoTenis.Preco));
+    return Results.Ok(new TenisDto(item.Id, item.Nome, item.Marca, item.Preco));
 });
 
-app.MapDelete("/api/tenis/{id}", (int id) =>
+app.MapDelete("/api/tenis/{id:int}", async (int id, TenisDbContext db) =>
 {
-    var item = tenis.FirstOrDefault(t => t.Id == id);
+    var item = await db.Tenis.FindAsync(id);
 
     if (item == null)
         return Results.NotFound();
 
-    tenis.Remove(item);
+    db.Tenis.Remove(item);
+    await db.SaveChangesAsync();
 
     return Results.NoContent();
 });
 
 app.Run();
-
-record Tenis(int Id, string Nome, string Marca, double Preco);
-record TenisDto(int Id, string Nome, string Marca, double Preco);
-record TenisInputDto(string Nome, string Marca, double Preco);

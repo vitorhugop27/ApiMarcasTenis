@@ -1,9 +1,6 @@
-# API Marcas de Tênis — AP2
+# API Marcas de Tênis
 
-## Sobre o projeto
-
-Este projeto é uma aplicação completa para cadastro e gerenciamento de marcas e modelos de tênis (AP2 da faculdade).
-A aplicação combina uma **API RESTful em ASP.NET Core** com persistência em banco de dados **SQLite via Entity Framework Core**, e uma **interface web (SPA)** responsiva desenvolvida em HTML, CSS e JavaScript puro (Vanilla), servida pela mesma origem da API através da pasta `wwwroot/`.
+> Aplicação da **AP2** desenvolvida em ASP.NET Core (.NET 10) com persistência em banco de dados **SQLite** (Entity Framework Core) e **interface web** responsiva integrada para cadastro e gerenciamento de tênis.
 
 ---
 
@@ -13,22 +10,33 @@ A aplicação combina uma **API RESTful em ASP.NET Core** com persistência em b
 
 ---
 
+## Sobre o projeto
+
+Este projeto foi desenvolvido como entrega da **AP2**, consistindo em uma solução completa que integra:
+- **API RESTful em ASP.NET Core (.NET 10):** Minimal API com endpoints assíncronos para listagem, busca, criação, edição e exclusão de tênis.
+- **Banco de Dados SQLite com Entity Framework Core:** persistência local com esquema criado via migrations versionadas e auto-migração na inicialização.
+- **Interface Web Integrada (`wwwroot`):** tela interativa e responsiva desenvolvida em HTML5, CSS3 e JavaScript puro (Vanilla via `fetch()`), servida pela mesma origem da API para dispensar configurações extras de CORS.
+
+---
+
 ## Tecnologias utilizadas
 
 - C# / .NET 10
 - ASP.NET Core (Minimal API)
-- Entity Framework Core 10 (com provedor SQLite)
-- Migrations versionadas para criação e atualização do esquema
-- HTML5 semântico, CSS3 responsivo e JavaScript Vanilla (Fetch API)
+- Entity Framework Core 10 com provedor SQLite
+- Migrations do EF Core para versionamento do banco de dados
+- HTML5, CSS3 (com acessibilidade `:focus-visible`) e JavaScript Vanilla (Fetch API)
+
+---
 
 ## Estrutura do Projeto
 
-- `Models/Tenis.cs`: Modelo de dados da entidade `Tenis` e DTOs (`TenisDto`, `TenisInputDto`).
-- `Data/TenisDbContext.cs`: Contexto de banco de dados do Entity Framework Core.
-- `Migrations/`: Migrações versionadas para geração do esquema do banco de dados SQLite.
-- `Program.cs`: Configuração de serviços, auto-migração, middlewares de arquivos estáticos e rotas da API.
-- `wwwroot/`: Interface web integrada (`index.html`, `style.css`, `app.js`).
-- `bruno/`: Coleção de requisições HTTP para testes no cliente Bruno.
+- `Models/Tenis.cs`: Entidade `Tenis` e DTOs (`TenisDto`, `TenisInputDto`).
+- `Data/TenisDbContext.cs`: Contexto do Entity Framework Core e mapeamento da tabela.
+- `Migrations/`: Arquivos de migração versionados para o banco SQLite.
+- `Program.cs`: Configuração de serviços, injeção de dependência, auto-migração, arquivos estáticos e endpoints da API.
+- `wwwroot/`: Interface web (`index.html`, `style.css`, `app.js`).
+- `bruno/`: Coleção de requisições prontas para testes no cliente HTTP Bruno.
 
 ---
 
@@ -36,33 +44,33 @@ A aplicação combina uma **API RESTful em ASP.NET Core** com persistência em b
 
 ### Pré-requisitos
 
-- Ter o [.NET 10 SDK](https://dotnet.microsoft.com/) instalado no computador.
-- (Opcional) Ferramenta `dotnet-ef` caso deseje gerar novas migrações manualmente:
+- [.NET 10 SDK](https://dotnet.microsoft.com/) instalado no computador.
+- (Opcional) Ferramenta `dotnet-ef` instalada globalmente:
   ```bash
   dotnet tool install --global dotnet-ef
   ```
 
 ### 1. Restaurar dependências
 
-Abra o terminal na pasta raiz do projeto (`ApiMarcasTenis`) e execute:
+No terminal, na pasta raiz do projeto (`ApiMarcasTenis`), execute:
 
 ```bash
 dotnet restore
 ```
 
-### 2. Criar e atualizar o banco de dados (Migrations)
+### 2. Criar ou atualizar o banco de dados (Migrations)
 
-Execute o comando a seguir para aplicar as migrações e gerar o arquivo de banco de dados SQLite (`tenis.db`):
+Execute o comando a seguir para aplicar as migrações e criar o arquivo de banco de dados SQLite (`tenis.db`):
 
 ```bash
 dotnet ef database update
 ```
 
-> **Nota:** A aplicação também possui auto-migração configurada em `Program.cs`. Caso execute diretamente `dotnet run`, o banco e os dados iniciais serão verificados automaticamente.
+> **Nota:** A aplicação também possui auto-migração em `Program.cs`. Ao executar `dotnet run`, o banco e os registros iniciais são criados automaticamente se ainda não existirem.
 
 ### 3. Executar a aplicação
 
-Inicie o servidor informando a URL da aplicação:
+Inicie o servidor informando a URL:
 
 ```bash
 dotnet run --urls http://localhost:5050
@@ -70,17 +78,17 @@ dotnet run --urls http://localhost:5050
 
 ### 4. Acessar a aplicação no Navegador
 
-Após iniciar o servidor, abra no seu navegador:
+Com a aplicação em execução, acesse:
 
 👉 **[http://localhost:5050/](http://localhost:5050/)**
 
-A interface web permite:
-- **Listar:** Exibe os tênis cadastrados no banco de dados SQLite.
-- **Filtrar:** Pesquisa em tempo real por nome ou marca.
-- **Visualizar:** Exibe os detalhes completos de um tênis em modal acessível.
-- **Cadastrar:** Adiciona novos tênis com validação de campos obrigatórios.
-- **Editar:** Atualiza os dados de um tênis já cadastrado.
-- **Excluir:** Remove um tênis do banco com confirmação prévia.
+Pela **interface web**, é possível:
+- **Listar:** Visualizar todos os tênis cadastrados no banco de dados SQLite.
+- **Filtrar:** Pesquisar em tempo real por nome ou marca.
+- **Visualizar:** Exibir detalhes completos em modal com foco acessível.
+- **Cadastrar:** Adicionar novos tênis através de formulário com validação.
+- **Editar:** Modificar dados de modelos já cadastrados.
+- **Excluir:** Remover itens do banco de dados com diálogo de confirmação.
 
 ---
 
@@ -95,7 +103,7 @@ A interface web permite:
 | `PUT` | `/api/tenis/{id}` | Atualiza um tênis existente pelo ID | 200 OK | 404 Not Found |
 | `DELETE` | `/api/tenis/{id}` | Exclui um tênis pelo ID | 204 No Content | 404 Not Found |
 
-### Exemplo de Corpo de Requisição (POST / PUT)
+### Exemplo de JSON (POST / PUT)
 
 ```json
 {
@@ -109,12 +117,12 @@ A interface web permite:
 
 ## Testando com a Collection do Bruno
 
-Abra a pasta `bruno/` no aplicativo [Bruno](https://www.usebruno.com/) para executar a coleção de testes com o ambiente `Local` selecionado:
+Abra a pasta `bruno/` no aplicativo [Bruno](https://www.usebruno.com/) e utilize o ambiente `Local`:
 
-1. `00 - Raiz`: Testa o carregamento da raiz da aplicação (`http://localhost:5050/`).
+1. `00 - Raiz`: Testa o acesso à interface web na raiz (`GET http://localhost:5050/`).
 2. `01 - Listar Tenis`: Retorna a lista de tênis (`GET /api/tenis`).
-3. `02 - Buscar Tenis`: Busca o primeiro tênis (`GET /api/tenis/1`).
+3. `02 - Buscar Tenis`: Busca um tênis pelo ID (`GET /api/tenis/1`).
 4. `03 - Criar Tenis`: Cadastra um tênis (`POST /api/tenis`).
-5. `04 - Atualizar Tenis`: Atualiza os dados de um tênis (`PUT /api/tenis/1`).
+5. `04 - Atualizar Tenis`: Atualiza um tênis (`PUT /api/tenis/1`).
 6. `05 - Excluir Tenis`: Remove um tênis (`DELETE /api/tenis/1`).
-7. `06 - Buscar Excluido`: Verifica o retorno 404 para o item removido (`GET /api/tenis/1`).
+7. `06 - Buscar Excluido`: Valida o retorno de `404 Not Found` (`GET /api/tenis/1`).

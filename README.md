@@ -60,37 +60,32 @@ dotnet restore
 
 ### 2. Criar ou atualizar o banco de dados (Migrations)
 
-Execute o comando a seguir para aplicar as migrações e criar o arquivo de banco de dados SQLite (`tenis.db`):
+A aplicação aplica as migrations automaticamente ao iniciar, criando ou atualizando o banco de dados SQLite (`tenis.db`) quando necessário.
 
-```bash
-dotnet ef database update
-```
-
-> **Nota:** A aplicação também possui auto-migração em `Program.cs`. Ao executar `dotnet run`, o banco e os registros iniciais são criados automaticamente se ainda não existirem.
+Para executar a aplicação normalmente, basta seguir para a etapa 3. Não é necessário executar o comando `dotnet ef database update` manualmente.
 
 ### 3. Executar a aplicação
 
 Inicie o servidor informando a URL:
 
 ```bash
-dotnet run --urls http://localhost:5050
+dotnet run --urls "http://localhost:5050"
 ```
 
 ### 4. Acessar a aplicação no Navegador
 
+
 Com a aplicação em execução, acesse:
 
-👉 **[http://localhost:5050/](http://localhost:5050/)**
+👉 **http://localhost:5050/**
 
-Pela **interface web**, é possível:
-- **Listar:** Visualizar todos os tênis cadastrados no banco de dados SQLite.
-- **Filtrar:** Pesquisar em tempo real por nome ou marca.
-- **Visualizar:** Exibir detalhes completos em modal com foco acessível.
-- **Cadastrar:** Adicionar novos tênis através de formulário com validação.
-- **Editar:** Modificar dados de modelos já cadastrados.
-- **Excluir:** Remover itens do banco de dados com diálogo de confirmação.
-
----
+Pela interface web, é possível:
+- Listar: Visualizar todos os tênis cadastrados no banco de dados SQLite.
+- Filtrar: Pesquisar em tempo real por nome ou marca.
+- Visualizar: Exibir detalhes completos em modal com foco acessível.
+- Cadastrar: Adicionar novos tênis através de formulário com validação.
+- Editar: Modificar dados de modelos já cadastrados.
+- Excluir: Remover itens do banco de dados com diálogo de confirmação.
 
 ## Rotas da API RESTful
 

@@ -1,21 +1,21 @@
-# API Marcas de Tênis
+## API Marcas de Tênis
 
-> Aplicação da **AP2** desenvolvida em ASP.NET Core (.NET 10) com persistência em banco de dados **SQLite** (Entity Framework Core) e **interface web** responsiva integrada para cadastro e gerenciamento de tênis.
+> Aplicação da AP2 foi desenvolvida em ASP.NET Core (.NET 10) com persistência em banco de dados SQLite (Entity Framework Core) e interface web responsiva integrada para cadastro e gerenciamento de tênis.
 
 ---
 
 ## 📹 Vídeo de Demonstração (AP2)
 
-- **Link público do vídeo:** `[Cole aqui o link público do seu vídeo no YouTube / Loom / Google Drive]`
+- Link público do vídeo: `[]`
 
 ---
 
 ## Sobre o projeto
 
-Este projeto foi desenvolvido como entrega da **AP2**, consistindo em uma solução completa que integra:
-- **API RESTful em ASP.NET Core (.NET 10):** Minimal API com endpoints assíncronos para listagem, busca, criação, edição e exclusão de tênis.
-- **Banco de Dados SQLite com Entity Framework Core:** persistência local com esquema criado via migrations versionadas e auto-migração na inicialização.
-- **Interface Web Integrada (`wwwroot`):** tela interativa e responsiva desenvolvida em HTML5, CSS3 e JavaScript puro (Vanilla via `fetch()`), servida pela mesma origem da API para dispensar configurações extras de CORS.
+Este projeto foi desenvolvido como entrega da AP2, consistindo em uma solução completa que integra:
+- API RESTful em ASP.NET Core (.NET 10): Minimal API com endpoints assíncronos para listagem, busca, criação, edição e exclusão de tênis.
+- Banco de Dados SQLite com Entity Framework Core: persistência local com esquema criado via migrations versionadas e auto-migração na inicialização.
+- Interface Web Integrada (`wwwroot`): tela interativa e responsiva desenvolvida em HTML5, CSS3 e JavaScript puro (Vanilla via `fetch()`), servida pela mesma origem da API para dispensar configurações extras de CORS.
 
 ---
 
@@ -77,7 +77,7 @@ dotnet run --urls "http://localhost:5050"
 
 Com a aplicação em execução, acesse:
 
-👉 **http://localhost:5050/**
+👉 http://localhost:5050/
 
 Pela interface web, é possível:
 - Listar: Visualizar todos os tênis cadastrados no banco de dados SQLite.

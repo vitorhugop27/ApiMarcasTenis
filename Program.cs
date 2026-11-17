@@ -4,13 +4,25 @@ using ApiMarcasTenis.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configuração do Entity Framework Core com SQLite
 builder.Services.AddDbContext<TenisDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection") ?? "Data Source=tenis.db"));
 
 var app = builder.Build();
 
-// Aplica migrações pendentes e insere dados iniciais caso o banco esteja vazio
+app.UseExceptionHandler(errorApp =>
+{
+    errorApp.Run(async context =>
+    {
+        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+        context.Response.ContentType = "application/json";
+
+        await context.Response.WriteAsJsonAsync(new
+        {
+            mensagem = "Ocorreu um erro interno. Tente novamente mais tarde."
+        });
+    });
+});
+
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<TenisDbContext>();
@@ -25,11 +37,9 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-// Configuração para servir arquivos estáticos de wwwroot (index.html, style.css, app.js)
 app.UseDefaultFiles();
 app.UseStaticFiles();
 
-// Rotas da API RESTful com acesso ao banco de dados SQLite
 app.MapGet("/api/tenis", async (TenisDbContext db) =>
 {
     var lista = await db.Tenis
